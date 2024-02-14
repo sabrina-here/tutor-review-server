@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 // SQ71VHn1Mw1zcjQ1
 // sabTutor
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri =
   "mongodb+srv://sabTutor:SQ71VHn1Mw1zcjQ1@cluster0.jmebqdy.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
@@ -35,6 +35,13 @@ async function run() {
     app.get("/homeServices", async (req, res) => {
       const services = await serviceCollection.find({}).limit(3).toArray();
       res.send(services);
+    });
+
+    app.get("/service/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const data = await serviceCollection.findOne(query);
+      res.send(data);
     });
   } finally {
   }
