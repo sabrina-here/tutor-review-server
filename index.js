@@ -27,6 +27,7 @@ client.connect((err) => {
 async function run() {
   try {
     const serviceCollection = client.db("tutorRev").collection("services");
+    const reviewCollection = client.db("tutorRev").collection("reviews");
 
     app.get("/services", async (req, res) => {
       const services = await serviceCollection.find({}).toArray();
@@ -42,6 +43,29 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const data = await serviceCollection.findOne(query);
       res.send(data);
+    });
+
+    app.post("/review", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+      console.log(review);
+    });
+
+    app.get("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { sub_id: id };
+      const cursor = reviewCollection.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+      console.log(reviews);
+    });
+    app.get("/reviews", async (req, res) => {
+      const query = {};
+      const cursor = reviewCollection.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
     });
   } finally {
   }
