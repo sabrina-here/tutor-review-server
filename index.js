@@ -54,18 +54,47 @@ async function run() {
 
     app.get("/reviews/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       const query = { sub_id: id };
       const cursor = reviewCollection.find(query);
       const reviews = await cursor.toArray();
       res.send(reviews);
-      console.log(reviews);
     });
+    app.get("/userReviews/:uid", async (req, res) => {
+      const user_id = req.params.uid;
+      console.log(user_id);
+      const query = { user_uid: user_id };
+      const cursor = reviewCollection.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+      console.log("reviews: ", reviews);
+    });
+
     app.get("/reviews", async (req, res) => {
       const query = {};
       const cursor = reviewCollection.find(query);
       const reviews = await cursor.toArray();
       res.send(reviews);
+    });
+
+    app.patch("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.params.status;
+      const query = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: { review: status },
+      };
+      const result = await reviewCollection.updateOne(query, updatedDoc, {
+        upsert: true,
+      });
+      res.send(result);
+    });
+
+    app.delete("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await reviewCollection.deleteOne(query);
+      res.send(result);
     });
   } finally {
   }
