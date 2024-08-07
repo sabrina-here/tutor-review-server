@@ -33,6 +33,12 @@ async function run() {
       const services = await serviceCollection.find({}).toArray();
       res.send(services);
     });
+    app.post("/service", async (req, res) => {
+      const subject = req.body;
+      const result = await serviceCollection.insertOne(subject);
+      res.send(result);
+      // console.log();
+    });
     app.get("/homeServices", async (req, res) => {
       const services = await serviceCollection.find({}).limit(3).toArray();
       res.send(services);
@@ -49,7 +55,6 @@ async function run() {
       const review = req.body;
       const result = await reviewCollection.insertOne(review);
       res.send(result);
-      console.log(review);
     });
 
     app.get("/reviews/:id", async (req, res) => {
@@ -62,12 +67,10 @@ async function run() {
     });
     app.get("/userReviews/:uid", async (req, res) => {
       const user_id = req.params.uid;
-      console.log(user_id);
       const query = { user_uid: user_id };
       const cursor = reviewCollection.find(query);
       const reviews = await cursor.toArray();
       res.send(reviews);
-      console.log("reviews: ", reviews);
     });
 
     app.get("/reviews", async (req, res) => {
@@ -90,8 +93,8 @@ async function run() {
       res.send(result);
     });
 
-    app.delete("/review/:id", async (req, res) => {
-      const id = req.params.id;
+    app.delete("/review/:rid", async (req, res) => {
+      const id = req.params.rid;
       const query = { _id: new ObjectId(id) };
       const result = await reviewCollection.deleteOne(query);
       res.send(result);
