@@ -65,6 +65,30 @@ async function run() {
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
+
+    // -------- UPDATING REVIEW --------------------
+    app.get("/editReview/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const data = await reviewCollection.findOne(query);
+      res.send(data);
+      console.log(data);
+    });
+    app.patch("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(req.body.status);
+      const newRev = req.body.status;
+
+      const query = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: { review: newRev },
+      };
+      const result = await reviewCollection.updateOne(query, updatedDoc, {
+        upsert: true,
+      });
+      res.send(result);
+    });
+
     app.get("/userReviews/:uid", async (req, res) => {
       const user_id = req.params.uid;
       const query = { user_uid: user_id };
@@ -78,19 +102,6 @@ async function run() {
       const cursor = reviewCollection.find(query);
       const reviews = await cursor.toArray();
       res.send(reviews);
-    });
-
-    app.patch("/review/:id", async (req, res) => {
-      const id = req.params.id;
-      const status = req.params.status;
-      const query = { _id: new ObjectId(id) };
-      const updatedDoc = {
-        $set: { review: status },
-      };
-      const result = await reviewCollection.updateOne(query, updatedDoc, {
-        upsert: true,
-      });
-      res.send(result);
     });
 
     app.delete("/review/:rid", async (req, res) => {
